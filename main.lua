@@ -146,7 +146,7 @@ AutoCollectFood.MouseButton1Click:Connect(function()
 				task.wait(0.1)
 				for _, e in ipairs(game.Workspace:GetDescendants()) do
 					if e:IsA("Tool") then
-						e.Parent = game.Players.LocalPlayer.Backpack
+						humanoid:EquipTool(e)
 					end
 				end
 			end
