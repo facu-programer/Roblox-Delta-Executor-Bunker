@@ -179,20 +179,28 @@ end
 local function collectTools()
 	local humanoid = getHumanoid()
 	local char = getCharacter()
+	local root = char:WaitForChild("HumanoidRootPart")
+	local pos = root.CFrame
 
 	-- Recorremos workspace en busca de Tools con ProximityPrompt
 	for _, e in ipairs(workspace:GetDescendants()) do
 		if e:IsA("Tool") and e:FindFirstChild("Handle") then
-			local proxy = e.Handle:FindFirstChild("ProximityPrompt")
+			local proxy = e.Handle:FindFirstChild("ProximityPrompt") :: ProximityPrompt
 			if proxy then
 				-- Activar el ProximityPrompt
 				proxy:InputHoldBegin()
-				task.wait(proxy.HoldDuration or 0)
+				local contador = 0
+				local startTime = tick()
+				while tick() - startTime < (proxy.HoldDuration or 0) do
+					char:SetPrimaryPartCFrame(pos)
+					task.wait(0.05) -- actualiza cada 0.05 segundos
+				end
 				proxy:InputHoldEnd()
-
+				
+				e.Handle.CFrame = root.CFrame
 				-- Mover Tool al Backpack antes de equipar
 				e.Parent = player.Backpack
-
+				
 				-- Equipar Tool
 				humanoid:EquipTool(e)
 			end
@@ -201,7 +209,6 @@ local function collectTools()
 
 	-- Congelar mientras tenga la Tool
 	updateFreeze(humanoid)
-	
 end
 
 -- Loop de auto-collect
