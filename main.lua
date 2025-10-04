@@ -1,5 +1,6 @@
 local player = game.Players.LocalPlayer
 local GUI = player.PlayerGui
+local HttpService = game:GetService("HttpService")
 
 local bola = Instance.new("ScreenGui")
 
@@ -150,10 +151,40 @@ stop.BorderSizePixel = 0
 stop.Transparency = 1
 stop.Parent = screen
 
+local TPBunker = Instance.new("TextButton")
+
+TPBunker.Text = "Teletransportarse al bunker"
+TPBunker.AnchorPoint = Vector2.new(0, 0)
+TPBunker.Position = UDim2.new(0, 110, 0, 0)
+TPBunker.Size = UDim2.new(0, 75, 0, 75)
+TPBunker.BorderSizePixel = 0
+TPBunker.BackgroundTransparency = 0
+TPBunker.TextColor3 = Color3.fromRGB(255, 255, 255)
+TPBunker.TextScaled = true
+TPBunker.Parent = SFrame
+
 local U = Instance.new("UICorner")
 
 U.CornerRadius = UDim.new(1, 0)
 U.Parent = stop
+
+local Bunkers = game.Workspace:WaitForChild("Bunkers")
+
+local function getBunker()
+	for _, child in ipairs(Bunkers:GetChildren()) do
+		local added = false
+		for _, descendant in ipairs(child:GetDescendants()) do
+			if descendant:IsA("BillboardGui") and not added and descendant.Enabled then
+				if descendant:GetChildren()[1].Text == game.Players.LocalPlayer.Character.Name then
+					return child
+				end
+			end
+		end
+	end
+	return nil
+end
+
+local bunker = getBunker()
 
 local collecting = false
 local player = game.Players.LocalPlayer
@@ -246,6 +277,10 @@ stop.MouseButton1Click:Connect(function()
 	stop.Transparency = 1
 end)
 
+TPBunker.MouseButton1Click:Connect(function()
+	
+end)
+
 local char = getCharacter()
 local root = char.HumanoidRootPart
 
@@ -262,3 +297,15 @@ end
 if not game:IsLoaded() then
 	game.Loaded:Wait()
 end
+
+local types = {}
+
+table.insert(types, bunker.ClassName)
+
+for _, e in ipairs(bunker:GetDescendants()) do
+	if not table.find(types, e.ClassName) then
+		table.insert(types, e.ClassName)
+	end
+end
+
+print(HttpService:JSONEncode(types))
