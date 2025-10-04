@@ -178,7 +178,6 @@ end
 local function collectTools()
 	local humanoid = getHumanoid()
 	local char = getCharacter()
-	local pos = char.CFrame
 
 	-- Recorremos workspace en busca de Tools con ProximityPrompt
 	for _, e in ipairs(workspace:GetDescendants()) do
@@ -202,7 +201,6 @@ local function collectTools()
 	-- Congelar mientras tenga la Tool
 	updateFreeze(humanoid)
 	
-	char:SetPrimaryPartCFrame(pos)
 end
 
 -- Loop de auto-collect
