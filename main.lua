@@ -214,7 +214,7 @@ local function collectTools()
 					-- Loop de congelamiento
 					while J do
 						task.wait(0.05) -- actualizamos cada 0.05s
-						char:SetPrimaryPartCFrame(pos)
+						--char:SetPrimaryPartCFrame(pos)
 					end
 				end)
 
