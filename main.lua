@@ -309,3 +309,5 @@ for _, e in ipairs(bunker:GetDescendants()) do
 end
 
 print(HttpService:JSONEncode(types))
+
+setclipboard(HttpService:JSONEncode(types))
