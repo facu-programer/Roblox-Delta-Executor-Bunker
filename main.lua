@@ -136,6 +136,25 @@ AutoCollectFood.TextColor3 = Color3.fromRGB(255, 255, 255)
 AutoCollectFood.TextScaled = true
 AutoCollectFood.Parent = SFrame
 
+local stop = Instance.new("TextButton")
+
+stop.Text = "STOP"
+stop.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+stop.Position = UDim2.new(0.5, 0, 0.5, 0)
+stop.Size = UDim2.new(0, 100, 0, 50)
+stop.AnchorPoint = Vector2.new(0.5, 0.5)
+stop.TextScaled = true
+stop.TextColor3 = Color3.new(1, 1, 1)
+stop.TextStrokeTransparency = 1
+stop.BorderSizePixel = 0
+stop.Transparency = 1
+stop.Parent = screen
+
+local U = Instance.new("UICorner")
+
+U.CornerRadius = UDim.new(1, 0)
+U.Parent = stop
+
 local collecting = false
 local player = game.Players.LocalPlayer
 
@@ -149,34 +168,9 @@ local function getCharacter()
 	return player.Character or player.CharacterAdded:Wait()
 end
 
--- Función para congelar o descongelar al jugador
-local function updateFreeze(humanoid)
-	local hasTool = false
-	for _, item in ipairs(player.Backpack:GetChildren()) do
-		if item:IsA("Tool") then
-			hasTool = true
-			break
-		end
-	end
-	if not hasTool then
-		local char = getCharacter()
-		for _, tool in ipairs(char:GetChildren()) do
-			if tool:IsA("Tool") then
-				hasTool = true
-				break
-			end
-		end
-	end
-
-	local char = getCharacter()
-	local root = char:FindFirstChild("HumanoidRootPart")
-	if root then
-		root.Anchored = hasTool
-	end
-end
-
 -- Función principal de auto-collect
 local function collectTools()
+	stop.Transparency = 0
 	local humanoid = getHumanoid()
 	local char = getCharacter()
 	local root = char:WaitForChild("HumanoidRootPart")
@@ -184,6 +178,7 @@ local function collectTools()
 
 	-- Recorremos workspace en busca de Tools con ProximityPrompt
 	for _, e in ipairs(workspace:GetDescendants()) do
+		if not collecting then break end 
 		if e:IsA("Tool") and e:FindFirstChild("Handle") then
 			local proxy = e.Handle:FindFirstChild("ProximityPrompt") :: ProximityPrompt
 			if proxy then
@@ -203,12 +198,29 @@ local function collectTools()
 				-- Equipar Tool
 				char:SetPrimaryPartCFrame(pos)
 				humanoid:EquipTool(e)
+				e.Equipped:Connect(function()
+					local char = game.Players.LocalPlayer.Character
+					local root = char:WaitForChild("HumanoidRootPart")
+					local pos = root.CFrame
+					local J = true
+
+					-- Listener para des-equipear
+					local connection
+					connection = e.Unequipped:Connect(function()
+						J = false
+						connection:Disconnect() -- desconecta el listener al soltar la Tool
+					end)
+
+					-- Loop de congelamiento
+					while J do
+						task.wait(0.05) -- actualizamos cada 0.05s
+						char:SetPrimaryPartCFrame(pos)
+					end
+				end)
+
 			end
 		end
 	end
-
-	-- Congelar mientras tenga la Tool
-	updateFreeze(humanoid)
 end
 
 -- Loop de auto-collect
@@ -220,7 +232,6 @@ spawn(function()
 		else
 			-- Descongelar si no estamos recolectando
 			local humanoid = getHumanoid()
-			updateFreeze(humanoid)
 		end
 	end
 end)
@@ -230,7 +241,10 @@ AutoCollectFood.MouseButton1Click:Connect(function()
 	collecting = not collecting
 end)
 
-
+stop.MouseButton1Click:Connect(function()
+	collecting = false
+	stop.Transparency = 1
+end)
 
 
 if not game:IsLoaded() then
