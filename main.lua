@@ -135,13 +135,16 @@ AutoCollectFood.TextColor3 = Color3.fromRGB(255, 255, 255)
 AutoCollectFood.TextScaled = true
 AutoCollectFood.Parent = SFrame
 
-local collecting = false -- bandera
+local collecting = false
 local player = game.Players.LocalPlayer
 
--- función segura para obtener humanoid
 local function getHumanoid()
 	local char = player.Character or player.CharacterAdded:Wait()
 	return char:WaitForChild("Humanoid")
+end
+
+local function getCharacter()
+	return player.Character or player.CharacterAdded:Wait()
 end
 
 AutoCollectFood.MouseButton1Click:Connect(function()
@@ -151,20 +154,34 @@ AutoCollectFood.MouseButton1Click:Connect(function()
 			while collecting do
 				task.wait(0.1)
 				local humanoid = getHumanoid()
+				local char = getCharacter()
+				local root = char:WaitForChild("HumanoidRootPart")
+
+				-- guardar posición actual
+				local savedCFrame = root.CFrame
+
 				if humanoid then
 					for _, e in ipairs(workspace:GetDescendants()) do
-						if e:IsA("Tool") and e.Parent == workspace then
-							-- simula que el jugador lo agarra
-							humanoid:EquipTool(e)
+						if e:IsA("Tool") and e:FindFirstChild("Handle") then
+							-- localizar la "mano"
+							local mano = char:FindFirstChild("Right Arm") or char:FindFirstChild("RightHand")
+							if mano then
+								-- poner el handle donde debe ir según el grip
+								e.Handle.CFrame = mano.CFrame * e.Grip
+							end
+
+							-- mandar al inventario (sin equipar automáticamente)
+							e.Parent = player.Backpack
 						end
 					end
 				end
+
+				-- restaurar la posición del player por si algún Tool intentó moverlo
+				root.CFrame = savedCFrame
 			end
 		end)
 	end
 end)
-
-
 
 
 if not game:IsLoaded() then
