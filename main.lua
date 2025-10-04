@@ -147,24 +147,35 @@ local function getCharacter()
 	return player.Character or player.CharacterAdded:Wait()
 end
 
-
 AutoCollectFood.MouseButton1Click:Connect(function()
 	collecting = not collecting
 	if collecting then
 		spawn(function()
 			while collecting do
 				task.wait(0.1)
-				local humanoid = getHumanoid()
+				local humanoid = getHumanoid() :: Humanoid
+				local char = getCharacter()
 				if humanoid then
 					for _, e in ipairs(workspace:GetDescendants()) do
 						if e:IsA("Tool") and e:FindFirstChild("Handle") then
-							local proxy = e:WaitForChild("Handle"):WaitForChild("ProximityPrompt") :: ProximityPrompt
-							
-							proxy:InputHoldBegin()
-							task.wait(proxy.HoldDuration)
-							proxy:InputHoldEnd()
+							local proxy = e.Handle:FindFirstChild("ProximityPrompt") :: ProximityPrompt
+							if proxy then
+								proxy.HoldDuration = 0
+								proxy:InputHoldBegin()
+								task.wait(proxy.HoldDuration or 0)
+								proxy:InputHoldEnd()
 
-							humanoid:EquipTool(e)
+								-- Equipar Tool
+								local hand = char:FindFirstChild("RightHand") or char:FindFirstChild("Right Arm")
+								if hand then
+									if e:FindFirstChild("Grip") then
+										e.Handle.CFrame = hand.CFrame * e.Grip
+									else
+										e.Handle.CFrame = hand.CFrame
+									end
+								end
+								humanoid:EquipTool(e)
+							end
 						end
 					end
 				end
@@ -172,6 +183,7 @@ AutoCollectFood.MouseButton1Click:Connect(function()
 		end)
 	end
 end)
+
 
 
 if not game:IsLoaded() then
