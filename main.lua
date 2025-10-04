@@ -290,6 +290,7 @@ local MIN_Y = -14
 local SAFE_Y = -13
 
 RunService.Heartbeat:Connect(function()
+	print(bunker.ClassName)
 	local pos = root.Position
 	if pos.Y < MIN_Y then
 		-- Teletransporta suavemente arriba del vacío
@@ -297,6 +298,4 @@ RunService.Heartbeat:Connect(function()
 		root.CFrame = newCFrame
 	end
 end)
-
-print(bunker.ClassName)
 
