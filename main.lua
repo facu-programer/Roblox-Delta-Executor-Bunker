@@ -138,6 +138,7 @@ AutoCollectFood.Parent = SFrame
 local collecting = false
 local player = game.Players.LocalPlayer
 
+-- Funciones para obtener humanoide y personaje
 local function getHumanoid()
 	local char = player.Character or player.CharacterAdded:Wait()
 	return char:WaitForChild("Humanoid")
@@ -147,42 +148,79 @@ local function getCharacter()
 	return player.Character or player.CharacterAdded:Wait()
 end
 
-AutoCollectFood.MouseButton1Click:Connect(function()
-	collecting = not collecting
-	if collecting then
-		spawn(function()
-			while collecting do
-				task.wait(0.1)
-				local humanoid = getHumanoid() :: Humanoid
-				local char = getCharacter()
-				if humanoid then
-					for _, e in ipairs(workspace:GetDescendants()) do
-						if e:IsA("Tool") and e:FindFirstChild("Handle") then
-							local proxy = e.Handle:FindFirstChild("ProximityPrompt") :: ProximityPrompt
-							if proxy then
-								proxy.HoldDuration = 0
-								proxy:InputHoldBegin()
-								task.wait(proxy.HoldDuration or 0)
-								proxy:InputHoldEnd()
-
-								-- Equipar Tool
-								local hand = char:FindFirstChild("RightHand") or char:FindFirstChild("Right Arm")
-								if hand then
-									if e:FindFirstChild("Grip") then
-										e.Handle.CFrame = hand.CFrame * e.Grip
-									else
-										e.Handle.CFrame = hand.CFrame
-									end
-								end
-								humanoid:EquipTool(e)
-							end
-						end
-					end
-				end
+-- Función para congelar o descongelar al jugador
+local function updateFreeze(humanoid)
+	local hasTool = false
+	for _, item in ipairs(player.Backpack:GetChildren()) do
+		if item:IsA("Tool") then
+			hasTool = true
+			break
+		end
+	end
+	if not hasTool then
+		local char = getCharacter()
+		for _, tool in ipairs(char:GetChildren()) do
+			if tool:IsA("Tool") then
+				hasTool = true
+				break
 			end
-		end)
+		end
+	end
+
+	local char = getCharacter()
+	local root = char:FindFirstChild("HumanoidRootPart")
+	if root then
+		root.Anchored = hasTool
+	end
+end
+
+-- Función principal de auto-collect
+local function collectTools()
+	local humanoid = getHumanoid()
+	local char = getCharacter()
+
+	-- Recorremos workspace en busca de Tools con ProximityPrompt
+	for _, e in ipairs(workspace:GetDescendants()) do
+		if e:IsA("Tool") and e:FindFirstChild("Handle") then
+			local proxy = e.Handle:FindFirstChild("ProximityPrompt")
+			if proxy then
+				-- Activar el ProximityPrompt
+				proxy:InputHoldBegin()
+				task.wait(proxy.HoldDuration or 0)
+				proxy:InputHoldEnd()
+
+				-- Mover Tool al Backpack antes de equipar
+				e.Parent = player.Backpack
+
+				-- Equipar Tool
+				humanoid:EquipTool(e)
+			end
+		end
+	end
+
+	-- Congelar mientras tenga la Tool
+	updateFreeze(humanoid)
+end
+
+-- Loop de auto-collect
+spawn(function()
+	while true do
+		task.wait(0.1)
+		if collecting then
+			pcall(collectTools)
+		else
+			-- Descongelar si no estamos recolectando
+			local humanoid = getHumanoid()
+			updateFreeze(humanoid)
+		end
 	end
 end)
+
+-- Activar/desactivar con botón
+AutoCollectFood.MouseButton1Click:Connect(function()
+	collecting = not collecting
+end)
+
 
 
 
