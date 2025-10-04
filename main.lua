@@ -126,12 +126,14 @@ end)
 local AutoCollectFood = Instance.new("TextButton")
 
 AutoCollectFood.Text = "Auto Recolectar Comida"
-AutoCollectFood.AnchorPoint = Vector2.new(1, 0)
-AutoCollectFood.Position = UDim2.new(0, 10, 0, 10)
+AutoCollectFood.AnchorPoint = Vector2.new(0, 0)
+AutoCollectFood.Position = UDim2.new(0, 0, 0, 0)
 AutoCollectFood.Size = UDim2.new(0, 75, 0, 75)
 AutoCollectFood.BorderSizePixel = 0
-AutoCollectFood.BackgroundTransparency = 1
-AutoCollectFood.Parent = FWare
+AutoCollectFood.BackgroundTransparency = 0
+AutoCollectFood.TextColor3 = Color3.fromRGB(255, 255, 255)
+AutoCollectFood.TextScaled = true
+AutoCollectFood.Parent = SFrame
 
 local collecting = false -- bandera para saber si está activo o no
 
