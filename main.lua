@@ -179,7 +179,7 @@ AutoCollectFood.MouseButton1Click:Connect(function()
 				if humanoid then
 					for _, e in ipairs(workspace:GetDescendants()) do
 						if e:IsA("Tool") then
-							for _, i in ipairs(e:GetDescemdants()) do
+							for _, i in ipairs(e:GetDescendants()) do
 								if i:IsA("ProximityPrompt") then
 									print(getFullPath(i))
 							    end
