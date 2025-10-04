@@ -160,6 +160,12 @@ local function getFullPath(obj)
 			parent = parent.Parent
 		end
 	end
+	path = path .. " "
+	if obj.Parent.Parent:IsA("Tool") then
+		path = path .. "true"
+	else
+		path = path .. "false"
+	end
 	return path
 end
 
