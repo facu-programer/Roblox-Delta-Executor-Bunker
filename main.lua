@@ -97,6 +97,7 @@ local FWare = Instance.new("ScreenGui")
 FWare.Name = "FWare"
 FWare.IgnoreGuiInset = false
 FWare.Enabled = false
+FWare.ResetOnSpawn = false
 FWare.Parent = GUI
 
 local SFrame = Instance.new("Frame")
