@@ -147,26 +147,36 @@ local function getCharacter()
 	return player.Character or player.CharacterAdded:Wait()
 end
 
-local function getFullPath(obj)
-	local path = obj.Name
-	local parent = obj.Parent
-	while parent do
-		-- corta si llegamos a "game"
-		if parent == game then
-			path = "game." .. path
-			break
-		else
-			path = parent.Name .. "." .. path
-			parent = parent.Parent
+local function tryFirePrompt(prompt)
+	-- Protección por si no existe la función global (en entornos oficiales puede no estar)
+	if typeof(fireproximityprompt) == "function" then
+		local ok, err = pcall(function()
+			-- 1 vez, hold 0 segundos (ajustá según HoldDuration del prompt)
+			fireproximityprompt(prompt, 1, 0)
+		end)
+		if not ok then
+			warn("fireproximityprompt falló: ", err)
 		end
+		return ok
 	end
-	path = path .. " "
-	if obj.Parent.Parent:IsA("Tool") then
-		path = path .. "true"
-	else
-		path = path .. "false"
+
+	-- Fallback: si el objeto expone InputHoldBegin/InputHoldEnd (algunas versiones sí)
+	if typeof(prompt.InputHoldBegin) == "function" and typeof(prompt.InputHoldEnd) == "function" then
+		local ok, err = pcall(function()
+			prompt:InputHoldBegin()
+			-- Si el prompt requiere HoldDuration, esperá lo necesario:
+			task.wait(math.max(0, prompt.HoldDuration or 0))
+			prompt:InputHoldEnd()
+		end)
+		if not ok then
+			warn("InputHoldBegin/End fallaron: ", err)
+		end
+		return ok
 	end
-	return path
+
+	-- Si no hay forma de dispararlo desde el cliente
+	warn("No hay método disponible para disparar este ProximityPrompt desde el cliente.")
+	return false
 end
 
 AutoCollectFood.MouseButton1Click:Connect(function()
@@ -176,26 +186,15 @@ AutoCollectFood.MouseButton1Click:Connect(function()
 			while collecting do
 				task.wait(0.1)
 				local humanoid = getHumanoid()
-				local char = getCharacter()
-				local root = char:WaitForChild("HumanoidRootPart")
-
-				-- guardar posición actual
-				local savedCFrame = root.CFrame
-
 				if humanoid then
 					for _, e in ipairs(workspace:GetDescendants()) do
-						if e:IsA("Tool") then
-							for _, i in ipairs(e:GetDescendants()) do
-								if i:IsA("ProximityPrompt") then
-									print(getFullPath(i))
-							    end
-							end
+						if e:IsA("Tool") and e:FindFirstChild("Handle") then
+							local proxy = e:WaitForChild("Handle"):WaitForChild("ProximityPrompt")
+							
+							tryFirePrompt(proxy)
 						end
 					end
 				end
-
-				-- restaurar la posición del player por si algún Tool intentó moverlo
-				root.CFrame = savedCFrame
 			end
 		end)
 	end
