@@ -183,11 +183,10 @@ U.Parent = stop
 local Bunkers = game.Workspace:WaitForChild("Bunkers")
 
 local function getBunker()
-	return Bunkers["Bunker_" ..  player.UserId]
+	return Bunkers[player.UserId .. "_Bunker"]
 end
 
 local bunker = getBunker()
-print("cccccc" .. bunker)
 
 local collecting = false
 local player = game.Players.LocalPlayer
@@ -271,7 +270,7 @@ stop.MouseButton1Click:Connect(function()
 end)
 
 TPBunker.MouseButton1Click:Connect(function()
-	char:SetPrimaryPartCFrame(CFrame.new(631, -11, 82.7))
+	char:SetPrimaryPartCFrame(bunker["Spawn Location"].CFrame)
 end)
 
 local RunService = game:GetService("RunService")
