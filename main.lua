@@ -136,6 +136,7 @@ AutoCollectFood.TextScaled = true
 AutoCollectFood.Parent = SFrame
 
 local collecting = false -- bandera para saber si está activo o no
+local player = game.Players.LocalPlayer
 
 AutoCollectFood.MouseButton1Click:Connect(function()
 	collecting = not collecting -- cambia entre true y false
@@ -144,15 +145,21 @@ AutoCollectFood.MouseButton1Click:Connect(function()
 		spawn(function() -- spawn para no bloquear el hilo principal
 			while collecting do
 				task.wait(0.1)
-				for _, e in ipairs(game.Workspace:GetDescendants()) do
-					if e:IsA("Tool") then
-						humanoid:EquipTool(e)
+				local char = player.Character or player.CharacterAdded:Wait()
+				local humanoid = char:FindFirstChildOfClass("Humanoid")
+				if humanoid then
+					for _, e in ipairs(workspace:GetDescendants()) do
+						if e:IsA("Tool") and not e.Parent:IsA("Backpack") then
+							-- usa el metodo seguro
+							humanoid:EquipTool(e)
+						end
 					end
 				end
 			end
 		end)
 	end
 end)
+
 
 
 if not game:IsLoaded() then
