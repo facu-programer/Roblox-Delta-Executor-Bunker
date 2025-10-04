@@ -299,6 +299,14 @@ screenGui.ResetOnSpawn = false
 screenGui.Enabled = true
 screenGui.Parent = CoreGui
 
+local otherGui = Instance.new("ScreenGui")
+
+otherGui.Name = "BackpackOtherGui"
+otherGui.ResetOnSpawn = false
+otherGui.Enabled = true
+otherGui.IgnoreGuiInset = true
+otherGui.Parent = CoreGui
+
 -- Crear botón
 local button = Instance.new("TextButton")
 button.Size = UDim2.new(0, 120, 0, 50)
@@ -309,13 +317,13 @@ button.TextColor3 = Color3.new(1, 1, 1)
 button.Parent = screenGui
 
 -- Frame de fondo transparente para detectar clics fuera del ScrollingFrame
-local bgFrame = Instance.new("Frame")
+local bgFrame = Instance.new("ImageButton")
 bgFrame.Size = UDim2.new(1,0,1,0)
 bgFrame.Position = UDim2.new(0,0,0,0)
-bgFrame.BackgroundTransparency = 0.5 -- semi-transparente
+bgFrame.BackgroundTransparency = 1 -- semi-transparente
 bgFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
 bgFrame.Visible = false
-bgFrame.Parent = screenGui
+bgFrame.Parent = otherGui
 
 -- Crear ScrollingFrame
 local SFrame = Instance.new("ScrollingFrame")
@@ -323,7 +331,7 @@ SFrame.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
 SFrame.Position = UDim2.new(0.1, 0, 0.1, 0)
 SFrame.Size = UDim2.new(0.8, 0, 0.8, 0)
 SFrame.BorderSizePixel = 0
-SFrame.Visible = false
+SFrame.Visible = true
 SFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
 SFrame.Parent = bgFrame -- importante que esté dentro del fondo
 
@@ -334,18 +342,19 @@ UIGrabLayout.CellPadding = UDim2.new(0, 20, 0, 20)
 UIGrabLayout.Parent = SFrame
 
 -- Abrir mochila
+-- Abrir mochila
 button.MouseButton1Click:Connect(function()
 	bgFrame.Visible = true
 	SFrame.Visible = true
+	button.Visible = false
 end)
 
 -- Cerrar al hacer clic fuera del ScrollingFrame
-bgFrame.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-		if not SFrame:IsAncestorOf(input.Target) then
-			bgFrame.Visible = false
-			SFrame.Visible = false
-		end
+bgFrame.MouseButton1Click:Connect(function(input)
+	-- Solo cerramos si el clic NO fue dentro del SFrame ni sus hijos
+	if not (SFrame:IsAncestorOf(input) or SFrame == input) then
+		bgFrame.Visible = false
+		SFrame.Visible = false
+		button.Visible = true
 	end
 end)
-
