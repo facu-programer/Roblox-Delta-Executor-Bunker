@@ -104,7 +104,6 @@ local SFrame = Instance.new("Frame")
 SFrame.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
 SFrame.Position = UDim2.new(0, 10, 0, 10)
 SFrame.Size = UDim2.new(1, -20, 1, -20)
-SFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
 SFrame.BorderSizePixel = 0
 SFrame.BackgroundTransparency = 0
 SFrame.Parent = FWare
