@@ -287,3 +287,65 @@ RunService.Heartbeat:Connect(function()
 		root.CFrame = newCFrame
 	end
 end)
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local CoreGui = game:GetService("CoreGui")
+
+-- Crear ScreenGui en CoreGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "BackpackButtonGui"
+screenGui.ResetOnSpawn = false
+screenGui.Enabled = true
+screenGui.Parent = CoreGui
+
+-- Crear botón
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0, 120, 0, 50)
+button.Position = UDim2.new(0, 20, 0, 20)
+button.Text = "Abrir Mochila"
+button.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+button.TextColor3 = Color3.new(1, 1, 1)
+button.Parent = screenGui
+
+-- Frame de fondo transparente para detectar clics fuera del ScrollingFrame
+local bgFrame = Instance.new("Frame")
+bgFrame.Size = UDim2.new(1,0,1,0)
+bgFrame.Position = UDim2.new(0,0,0,0)
+bgFrame.BackgroundTransparency = 0.5 -- semi-transparente
+bgFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+bgFrame.Visible = false
+bgFrame.Parent = screenGui
+
+-- Crear ScrollingFrame
+local SFrame = Instance.new("ScrollingFrame")
+SFrame.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
+SFrame.Position = UDim2.new(0.1, 0, 0.1, 0)
+SFrame.Size = UDim2.new(0.8, 0, 0.8, 0)
+SFrame.BorderSizePixel = 0
+SFrame.Visible = false
+SFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+SFrame.Parent = bgFrame -- importante que esté dentro del fondo
+
+-- UIGridLayout
+local UIGrabLayout = Instance.new("UIGridLayout")
+UIGrabLayout.CellSize = UDim2.new(0, 100, 0, 100)
+UIGrabLayout.CellPadding = UDim2.new(0, 20, 0, 20)
+UIGrabLayout.Parent = SFrame
+
+-- Abrir mochila
+button.MouseButton1Click:Connect(function()
+	bgFrame.Visible = true
+	SFrame.Visible = true
+end)
+
+-- Cerrar al hacer clic fuera del ScrollingFrame
+bgFrame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		if not SFrame:IsAncestorOf(input.Target) then
+			bgFrame.Visible = false
+			SFrame.Visible = false
+		end
+	end
+end)
+
