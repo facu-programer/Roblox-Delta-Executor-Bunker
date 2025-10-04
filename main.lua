@@ -183,20 +183,11 @@ U.Parent = stop
 local Bunkers = game.Workspace:WaitForChild("Bunkers")
 
 local function getBunker()
-	for _, child in ipairs(Bunkers:GetChildren()) do
-		local added = false
-		for _, descendant in ipairs(child:GetDescendants()) do
-			if descendant:IsA("BillboardGui") and not added and descendant.Enabled then
-				if descendant:GetChildren()[1].Text == game.Players.LocalPlayer.Character.Name then
-					return child
-				end
-			end
-		end
-	end
-	return nil
+	return Bunkers["Bunker_" ..  player.UserId]
 end
 
 local bunker = getBunker()
+print("cccccc" .. bunker)
 
 local collecting = false
 local player = game.Players.LocalPlayer
@@ -290,7 +281,6 @@ local MIN_Y = -14
 local SAFE_Y = -13
 
 RunService.Heartbeat:Connect(function()
-	print(bunker.ClassName)
 	local pos = root.Position
 	if pos.Y < MIN_Y then
 		-- Teletransporta suavemente arriba del vacío
@@ -298,4 +288,3 @@ RunService.Heartbeat:Connect(function()
 		root.CFrame = newCFrame
 	end
 end)
-
