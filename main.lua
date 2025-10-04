@@ -147,6 +147,22 @@ local function getCharacter()
 	return player.Character or player.CharacterAdded:Wait()
 end
 
+local function getFullPath(obj)
+	local path = obj.Name
+	local parent = obj.Parent
+	while parent do
+		-- corta si llegamos a "game"
+		if parent == game then
+			path = "game." .. path
+			break
+		else
+			path = parent.Name .. "." .. path
+			parent = parent.Parent
+		end
+	end
+	return path
+end
+
 AutoCollectFood.MouseButton1Click:Connect(function()
 	collecting = not collecting
 	if collecting then
@@ -162,16 +178,12 @@ AutoCollectFood.MouseButton1Click:Connect(function()
 
 				if humanoid then
 					for _, e in ipairs(workspace:GetDescendants()) do
-						if e:IsA("Tool") and e:FindFirstChild("Handle") then
-							-- localizar la "mano"
-							local mano = char:FindFirstChild("Right Arm") or char:FindFirstChild("RightHand")
-							if mano then
-								-- poner el handle donde debe ir según el grip
-								e.Handle.CFrame = mano.CFrame * e.Grip
+						if e:IsA("Tool") then
+							for _, i in ipairs(e:GetDescemdants()) do
+								if i:IsA("ProximityPrompt") then
+									print(getFullPath(i))
+							    end
 							end
-
-							-- mandar al inventario (sin equipar automáticamente)
-							e.Parent = player.Backpack
 						end
 					end
 				end
