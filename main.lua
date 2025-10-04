@@ -283,12 +283,18 @@ TPBunker.MouseButton1Click:Connect(function()
 	char:SetPrimaryPartCFrame(CFrame.new(631, -11, 82.7))
 end)
 
-while true do
-	task.wait()
+local RunService = game:GetService("RunService")
+
+-- Limite Y mínimo
+local MIN_Y = -14
+local SAFE_Y = -13
+
+RunService.Heartbeat:Connect(function()
 	local pos = root.Position
-	if pos.Y > -14 then
-		local x, y, z = pos.X, 0.14, pos.Z
-		local rx, ry, rz = root.CFrame:ToEulerAnglesXYZ()
-		char:SetPrimaryPartCFrame(CFrame.new(x, y, z) * CFrame.Angles(rx, ry, rz))
+	if pos.Y < MIN_Y then
+		-- Teletransporta suavemente arriba del vacío
+		local newCFrame = CFrame.new(pos.X, SAFE_Y, pos.Z)
+		root.CFrame = newCFrame
 	end
-end
+end)
+
