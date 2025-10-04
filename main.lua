@@ -163,6 +163,8 @@ AutoCollectFood.MouseButton1Click:Connect(function()
 							proxy:InputHoldBegin()
 							task.wait(proxy.HoldDuration)
 							proxy:InputHoldEnd()
+
+							humanoid:EquipTool(e)
 						end
 					end
 				end
