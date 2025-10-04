@@ -183,7 +183,7 @@ local function collectTools()
 			local proxy = e.Handle:FindFirstChild("ProximityPrompt") :: ProximityPrompt
 			if proxy then
 				-- Activar el ProximityPrompt
-				--char:SetPrimaryPartCFrame(pos)
+				char:SetPrimaryPartCFrame(pos)
 				proxy:InputHoldBegin()
 				--char:SetPrimaryPartCFrame(pos)
 				proxy:InputHoldEnd()
@@ -213,7 +213,7 @@ local function collectTools()
 
 					-- Loop de congelamiento
 					while J do
-						task.wait(0.05) -- actualizamos cada 0.05s
+						task.wait() -- actualizamos cada 0.05s
 						--char:SetPrimaryPartCFrame(pos)
 					end
 				end)
@@ -245,6 +245,18 @@ stop.MouseButton1Click:Connect(function()
 	collecting = false
 	stop.Transparency = 1
 end)
+
+local char = getCharacter()
+local root = char.HumanoidRootPart
+
+while true do
+	task.wait(0.05)
+	local pos = root.Position
+	if pos.Y > 40 then
+		-- Creamos un nuevo CFrame con Y = 40, manteniendo X y Z
+		root.CFrame = CFrame.new(pos.X, 40, pos.Z, root.CFrame:ToEulerAnglesXYZ())
+	end
+end
 
 
 if not game:IsLoaded() then
