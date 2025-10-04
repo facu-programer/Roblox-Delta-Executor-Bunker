@@ -188,20 +188,20 @@ local function collectTools()
 			local proxy = e.Handle:FindFirstChild("ProximityPrompt") :: ProximityPrompt
 			if proxy then
 				-- Activar el ProximityPrompt
+				char:SetPrimaryPartCFrame(pos)
 				proxy:InputHoldBegin()
-				local contador = 0
-				local startTime = tick()
-				while tick() - startTime < (proxy.HoldDuration or 0) do
-					char:SetPrimaryPartCFrame(pos)
-					task.wait(0.05) -- actualiza cada 0.05 segundos
-				end
+				char:SetPrimaryPartCFrame(pos)
 				proxy:InputHoldEnd()
+				char:SetPrimaryPartCFrame(pos)
 				
 				e.Handle.CFrame = root.CFrame
+				char:SetPrimaryPartCFrame(pos)
 				-- Mover Tool al Backpack antes de equipar
+				char:SetPrimaryPartCFrame(pos)
 				e.Parent = player.Backpack
 				
 				-- Equipar Tool
+				char:SetPrimaryPartCFrame(pos)
 				humanoid:EquipTool(e)
 			end
 		end
