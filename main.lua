@@ -270,7 +270,7 @@ stop.MouseButton1Click:Connect(function()
 end)
 
 TPBunker.MouseButton1Click:Connect(function()
-	char:SetPrimaryPartCFrame(bunker["Spawn Location"].CFrame)
+	char:SetPrimaryPartCFrame(bunker["SpawnLocation"].CFrame)
 end)
 
 local RunService = game:GetService("RunService")
