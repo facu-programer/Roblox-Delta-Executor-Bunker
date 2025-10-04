@@ -2,6 +2,18 @@ local player = game.Players.LocalPlayer
 local GUI = player.PlayerGui
 local HttpService = game:GetService("HttpService")
 
+local function getHumanoid()
+	local char = player.Character or player.CharacterAdded:Wait()
+	return char:WaitForChild("Humanoid")
+end
+
+local function getCharacter()
+	return player.Character or player.CharacterAdded:Wait()
+end
+
+local char = getCharacter()
+local root = char.HumanoidRootPart
+
 local bola = Instance.new("ScreenGui")
 
 bola.Name = "Bola"
@@ -189,16 +201,6 @@ local bunker = getBunker()
 local collecting = false
 local player = game.Players.LocalPlayer
 
--- Funciones para obtener humanoide y personaje
-local function getHumanoid()
-	local char = player.Character or player.CharacterAdded:Wait()
-	return char:WaitForChild("Humanoid")
-end
-
-local function getCharacter()
-	return player.Character or player.CharacterAdded:Wait()
-end
-
 -- Función principal de auto-collect
 local function collectTools()
 	stop.Transparency = 0
@@ -278,36 +280,15 @@ stop.MouseButton1Click:Connect(function()
 end)
 
 TPBunker.MouseButton1Click:Connect(function()
-	
+	char:SetPrimaryPartCFrame(CFrame.new(631, -11, 82.7))
 end)
 
-local char = getCharacter()
-local root = char.HumanoidRootPart
-
 while true do
-	task.wait(0.05)
+	task.wait()
 	local pos = root.Position
-	if pos.Y > 40 then
-		-- Creamos un nuevo CFrame con Y = 40, manteniendo X y Z
-		root.CFrame = CFrame.new(pos.X, 40, pos.Z, root.CFrame:ToEulerAnglesXYZ())
+	if pos.Y > -14 then
+		local x, y, z = pos.X, 0.14, pos.Z
+		local rx, ry, rz = root.CFrame:ToEulerAnglesXYZ()
+		char:SetPrimaryPartCFrame(CFrame.new(x, y, z) * CFrame.Angles(rx, ry, rz))
 	end
 end
-
-
-if not game:IsLoaded() then
-	game.Loaded:Wait()
-end
-
-local types = {}
-
-table.insert(types, bunker.ClassName)
-
-for _, e in ipairs(bunker:GetDescendants()) do
-	if not table.find(types, e.ClassName) then
-		table.insert(types, e.ClassName)
-	end
-end
-
-print(HttpService:JSONEncode(types))
-
-setclipboard(HttpService:JSONEncode(types))
