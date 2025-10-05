@@ -1,6 +1,7 @@
 local player = game.Players.LocalPlayer
 local GUI = player.PlayerGui
 local HttpService = game:GetService("HttpService")
+local RealFlag = false
 
 local function getHumanoid()
 	local char = player.Character or player.CharacterAdded:Wait()
@@ -175,6 +176,22 @@ TPBunker.TextColor3 = Color3.fromRGB(255, 255, 255)
 TPBunker.TextScaled = true
 TPBunker.Parent = SFrame
 
+local autoReal = Instance.new("TextButton")
+
+autoReal.Text = "Cuando agarres los objetos automaticamente lo veran todos y no solo tu"
+autoReal.AnchorPoint = Vector2.new(0, 0)
+autoReal.Position = UDim2.new(0, 110, 0, 0)
+autoReal.Size = UDim2.new(0, 75, 0, 75)
+autoReal.BorderSizePixel = 0
+autoReal.BackgroundTransparency = 0
+autoReal.TextColor3 = Color3.fromRGB(255, 255, 255)
+autoReal.TextScaled = true
+autoReal.Parent = SFrame
+
+autoReal.MouseButton1Click:Connect(function()
+	RealFlag = not RealFlag
+end)
+
 local U = Instance.new("UICorner")
 
 U.CornerRadius = UDim.new(1, 0)
@@ -191,7 +208,6 @@ local bunker = getBunker()
 local collecting = false
 local player = game.Players.LocalPlayer
 
--- Función principal de auto-collect
 local function collectTools()
 	stop.Transparency = 0
 	local humanoid = getHumanoid()
@@ -199,27 +215,17 @@ local function collectTools()
 	local root = char:WaitForChild("HumanoidRootPart")
 	local pos = root.CFrame
 
-	-- Recorremos workspace en busca de Tools con ProximityPrompt
 	for _, e in ipairs(workspace:GetDescendants()) do
 		if not collecting then break end 
 		if e:IsA("Tool") and e:FindFirstChild("Handle") then
 			local proxy = e.Handle:FindFirstChild("ProximityPrompt") :: ProximityPrompt
 			if proxy then
-				-- Activar el ProximityPrompt
 				char:SetPrimaryPartCFrame(pos)
 				proxy:InputHoldBegin()
-				--char:SetPrimaryPartCFrame(pos)
 				proxy:InputHoldEnd()
-				--char:SetPrimaryPartCFrame(pos)
-				
 				e.Handle.CFrame = root.CFrame
-				--char:SetPrimaryPartCFrame(pos)
-				-- Mover Tool al Backpack antes de equipar
-				--char:SetPrimaryPartCFrame(pos)
 				e.Parent = player.Backpack
 				
-				-- Equipar Tool
-				--char:SetPrimaryPartCFrame(pos)
 				humanoid:EquipTool(e)
 				e.Equipped:Connect(function()
 					local char = game.Players.LocalPlayer.Character
@@ -227,17 +233,13 @@ local function collectTools()
 					local pos = root.CFrame
 					local J = true
 
-					-- Listener para des-equipear
 					local connection
 					connection = e.Unequipped:Connect(function()
 						J = false
-						connection:Disconnect() -- desconecta el listener al soltar la Tool
+						connection:Disconnect()
 					end)
-
-					-- Loop de congelamiento
 					while J do
-						task.wait() -- actualizamos cada 0.05s
-						--char:SetPrimaryPartCFrame(pos)
+						task.wait()
 					end
 				end)
 
@@ -246,20 +248,17 @@ local function collectTools()
 	end
 end
 
--- Loop de auto-collect
 spawn(function()
 	while true do
 		task.wait(0.1)
 		if collecting then
 			pcall(collectTools)
 		else
-			-- Descongelar si no estamos recolectando
 			local humanoid = getHumanoid()
 		end
 	end
 end)
 
--- Activar/desactivar con botón
 AutoCollectFood.MouseButton1Click:Connect(function()
 	collecting = not collecting
 end)
@@ -275,24 +274,20 @@ end)
 
 local RunService = game:GetService("RunService")
 
--- Limite Y mínimo
+
 local MIN_Y = -14
 local SAFE_Y = -13
 
 RunService.Heartbeat:Connect(function()
 	local pos = root.Position
 	if pos.Y < MIN_Y then
-		-- Teletransporta suavemente arriba del vacío
 		local newCFrame = CFrame.new(pos.X, SAFE_Y, pos.Z)
 		root.CFrame = newCFrame
 	end
 end)
 
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
 local CoreGui = game:GetService("CoreGui")
 
--- Crear ScreenGui en CoreGui
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "BackpackButtonGui"
 screenGui.ResetOnSpawn = false
@@ -307,25 +302,22 @@ otherGui.Enabled = true
 otherGui.IgnoreGuiInset = true
 otherGui.Parent = CoreGui
 
--- Crear botón
 local button = Instance.new("TextButton")
 button.Size = UDim2.new(0, 120, 0, 50)
 button.Position = UDim2.new(0, 20, 0, 20)
 button.Text = "Abrir Mochila"
-button.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+button.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
 button.TextColor3 = Color3.new(1, 1, 1)
 button.Parent = screenGui
 
--- Frame de fondo transparente para detectar clics fuera del ScrollingFrame
 local bgFrame = Instance.new("ImageButton")
 bgFrame.Size = UDim2.new(1,0,1,0)
 bgFrame.Position = UDim2.new(0,0,0,0)
-bgFrame.BackgroundTransparency = 1 -- semi-transparente
+bgFrame.BackgroundTransparency = 1
 bgFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
 bgFrame.Visible = false
 bgFrame.Parent = otherGui
 
--- Crear ScrollingFrame
 local SFrame = Instance.new("ScrollingFrame")
 SFrame.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
 SFrame.Position = UDim2.new(0.1, 0, 0.1, 0)
@@ -333,28 +325,43 @@ SFrame.Size = UDim2.new(0.8, 0, 0.8, 0)
 SFrame.BorderSizePixel = 0
 SFrame.Visible = true
 SFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
-SFrame.Parent = bgFrame -- importante que esté dentro del fondo
+SFrame.Parent = bgFrame
 
--- UIGridLayout
 local UIGrabLayout = Instance.new("UIGridLayout")
 UIGrabLayout.CellSize = UDim2.new(0, 100, 0, 100)
 UIGrabLayout.CellPadding = UDim2.new(0, 20, 0, 20)
 UIGrabLayout.Parent = SFrame
 
--- Abrir mochila
--- Abrir mochila
 button.MouseButton1Click:Connect(function()
 	bgFrame.Visible = true
 	SFrame.Visible = true
 	button.Visible = false
 end)
 
--- Cerrar al hacer clic fuera del ScrollingFrame
 bgFrame.MouseButton1Click:Connect(function(input)
-	-- Solo cerramos si el clic NO fue dentro del SFrame ni sus hijos
 	if not (SFrame:IsAncestorOf(input) or SFrame == input) then
 		bgFrame.Visible = false
 		SFrame.Visible = false
 		button.Visible = true
+	end
+end)
+
+local function createToolIcon(tool)
+	local i = Instance.new("ImageLabel")
+	i.Size = UDim2.new(0, 100, 0, 100)
+	i.BackgroundTransparency = 1
+	i.Image = tool.TextureId
+	i.Parent = SFrame
+end
+
+for _, e in ipairs(player.Backpack:GetChildren()) do
+	if e:IsA("Tool") then
+		createToolIcon(e)
+	end
+end
+
+player.Backpack.ChildAdded:Connect(function(e)
+	if e:IsA("Tool") then
+		createToolIcon(e)
 	end
 end)
