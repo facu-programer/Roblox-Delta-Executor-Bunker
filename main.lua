@@ -5,12 +5,7 @@ local RealFlag = true
 
 local function triggerPromptDirectly(prompt)
 	if prompt and prompt:IsA("ProximityPrompt") then
-		local connections = getconnections(prompt.Triggered)
-		for _, conn in ipairs(connections) do
-			-- En clientes normalmente se pasa el jugador local
-			conn:Fire(player)
-			print("Conection")
-		end
+		prompt.Triggered:Fire(player)
 		print("Prompt")
 	end
 end
