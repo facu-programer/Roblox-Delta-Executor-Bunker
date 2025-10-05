@@ -11,6 +11,7 @@ local function triggerPromptDirectly(prompt)
 			conn:Fire(player)
 			print("Conection")
 		end
+		print("Prompt")
 	end
 end
 
