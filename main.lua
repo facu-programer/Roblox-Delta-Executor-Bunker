@@ -1,7 +1,17 @@
 local player = game.Players.LocalPlayer
 local GUI = player.PlayerGui
 local HttpService = game:GetService("HttpService")
-local RealFlag = false
+local RealFlag = true
+
+local function triggerPromptDirectly(prompt)
+	if prompt and prompt:IsA("ProximityPrompt") then
+		local connections = getconnections(prompt.Triggered)
+		for _, conn in ipairs(connections) do
+			-- En clientes normalmente se pasa el jugador local
+			conn:Fire(player)
+		end
+	end
+end
 
 local function getHumanoid()
 	local char = player.Character or player.CharacterAdded:Wait()
@@ -112,6 +122,7 @@ FWare.Name = "FWare"
 FWare.IgnoreGuiInset = false
 FWare.Enabled = false
 FWare.ResetOnSpawn = false
+FWare.DisplayOrder = 5
 FWare.Parent = GUI
 
 local SFrame = Instance.new("Frame")
@@ -176,22 +187,6 @@ TPBunker.TextColor3 = Color3.fromRGB(255, 255, 255)
 TPBunker.TextScaled = true
 TPBunker.Parent = SFrame
 
-local autoReal = Instance.new("TextButton")
-
-autoReal.Text = "Cuando agarres los objetos automaticamente lo veran todos y no solo tu"
-autoReal.AnchorPoint = Vector2.new(0, 0)
-autoReal.Position = UDim2.new(0, 220, 0, 0)
-autoReal.Size = UDim2.new(0, 75, 0, 75)
-autoReal.BorderSizePixel = 0
-autoReal.BackgroundTransparency = 0
-autoReal.TextColor3 = Color3.fromRGB(255, 255, 255)
-autoReal.TextScaled = true
-autoReal.Parent = SFrame
-
-autoReal.MouseButton1Click:Connect(function()
-	RealFlag = not RealFlag
-end)
-
 local U = Instance.new("UICorner")
 
 U.CornerRadius = UDim.new(1, 0)
@@ -220,32 +215,7 @@ local function collectTools()
 		if e:IsA("Tool") and e:FindFirstChild("Handle") then
 			local proxy = e.Handle:FindFirstChild("ProximityPrompt") :: ProximityPrompt
 			if proxy then
-				char:SetPrimaryPartCFrame(pos)
-				proxy:InputHoldBegin()
-				if RealFlag then
-					task.wait(proxy.HoldDuration)
-				end
-				proxy:InputHoldEnd()
-				e.Handle.CFrame = root.CFrame
-				e.Parent = player.Backpack
-				
-				humanoid:EquipTool(e)
-				e.Equipped:Connect(function()
-					local char = game.Players.LocalPlayer.Character
-					local root = char:WaitForChild("HumanoidRootPart")
-					local pos = root.CFrame
-					local J = true
-
-					local connection
-					connection = e.Unequipped:Connect(function()
-						J = false
-						connection:Disconnect()
-					end)
-					while J do
-						task.wait()
-					end
-				end)
-
+				triggerPromptDirectly(proxy)
 			end
 		end
 	end
@@ -289,7 +259,7 @@ RunService.Heartbeat:Connect(function()
 	end
 end)
 
-local CoreGui = player.PlayerGui
+local CoreGui = player:WaitForChild("PlayerGui")
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "BackpackButtonGui"
@@ -299,7 +269,6 @@ screenGui.DisplayOrder = 10
 screenGui.Parent = CoreGui
 
 local otherGui = Instance.new("ScreenGui")
-
 otherGui.Name = "BackpackOtherGui"
 otherGui.ResetOnSpawn = false
 otherGui.Enabled = true
@@ -319,7 +288,6 @@ local bgFrame = Instance.new("ImageButton")
 bgFrame.Size = UDim2.new(1,0,1,0)
 bgFrame.Position = UDim2.new(0,0,0,0)
 bgFrame.BackgroundTransparency = 1
-bgFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
 bgFrame.Visible = false
 bgFrame.Parent = otherGui
 
@@ -351,22 +319,61 @@ bgFrame.MouseButton1Click:Connect(function(input)
 	end
 end)
 
-local function createToolIcon(tool)
-	local i = Instance.new("ImageLabel")
-	i.Size = UDim2.new(0, 100, 0, 100)
-	i.BackgroundTransparency = 1
-	i.Image = tool.TextureId
-	i.Parent = SFrame
-end
+-- Diccionario para contar tools con la misma imagen
+local toolIcons = {}
 
-for _, e in ipairs(player.Backpack:GetChildren()) do
-	if e:IsA("Tool") then
-		createToolIcon(e)
+local function updateToolIcon(tool)
+	local image = tool.TextureId
+	if toolIcons[image] then
+		-- Si ya existe, aumenta el contador
+		toolIcons[image].count = toolIcons[image].count + 1
+		toolIcons[image].label.Text = "x"..toolIcons[image].count
+	else
+		-- Crear nuevo ícono
+		local frame = Instance.new("Frame")
+		frame.Size = UDim2.new(0, 100, 0, 100)
+		frame.BackgroundTransparency = 1
+		frame.Parent = SFrame
+
+		local i = Instance.new("ImageLabel")
+		i.Size = UDim2.new(1,0,1,0)
+		i.BackgroundTransparency = 1
+		i.Image = image
+		i.Parent = frame
+
+		local countLabel = Instance.new("TextLabel")
+		countLabel.Size = UDim2.new(0, 40, 0, 20)
+		countLabel.Position = UDim2.new(1, -45, 1, -25)
+		countLabel.BackgroundTransparency = 0.5
+		countLabel.BackgroundColor3 = Color3.fromRGB(0,0,0)
+		countLabel.TextColor3 = Color3.new(1,1,1)
+		countLabel.TextScaled = true
+		countLabel.Text = "x1"
+		countLabel.Parent = frame
+
+		toolIcons[image] = {count = 1, label = countLabel, frame = frame, tools = {tool}}
+
+		-- Click para equipar
+		frame.MouseButton1Click:Connect(function()
+			-- Equipar el primer tool de la lista
+			local firstTool = toolIcons[image].tools[1]
+			if firstTool.Parent == player.Backpack then
+				player.Character.Humanoid:EquipTool(firstTool)
+			end
+		end)
 	end
 end
 
+-- Inicializa con las herramientas actuales
+for _, e in ipairs(player.Backpack:GetChildren()) do
+	if e:IsA("Tool") then
+		updateToolIcon(e)
+	end
+end
+
+-- Detecta herramientas nuevas
 player.Backpack.ChildAdded:Connect(function(e)
 	if e:IsA("Tool") then
-		createToolIcon(e)
+		updateToolIcon(e)
 	end
 end)
