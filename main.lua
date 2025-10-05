@@ -1,3 +1,5 @@
+print("eee")
+
 local player = game.Players.LocalPlayer
 local hum = player.Character.Humanoid :: Humanoid
 local GUI = player.PlayerGui
