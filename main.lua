@@ -180,7 +180,7 @@ local autoReal = Instance.new("TextButton")
 
 autoReal.Text = "Cuando agarres los objetos automaticamente lo veran todos y no solo tu"
 autoReal.AnchorPoint = Vector2.new(0, 0)
-autoReal.Position = UDim2.new(0, 110, 0, 0)
+autoReal.Position = UDim2.new(0, 220, 0, 0)
 autoReal.Size = UDim2.new(0, 75, 0, 75)
 autoReal.BorderSizePixel = 0
 autoReal.BackgroundTransparency = 0
