@@ -4,15 +4,15 @@ local HttpService = game:GetService("HttpService")
 local RealFlag = true
 
 local function triggerPromptDirectly(prompt)
+	local prompt = prompt :: ProximityPrompt
 	if prompt and prompt:IsA("ProximityPrompt") then
-		local connections = getconnections(prompt.Triggered)
-		
-        for _, conn in ipairs(connections) do
-            conn:Fire(player)
-			print("Conection")
-        end
-		print("Prompt")
+		prompt.Triggered:Fire(player)
 	end
+	task.spawn(function()
+		prompt:InputHoldBegin()
+		task.wait(prompt.HoldDuration or 0)
+		prompt:InputHoldEnd()
+	end)
 end
 
 local function getHumanoid()
