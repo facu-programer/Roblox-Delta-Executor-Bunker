@@ -9,6 +9,7 @@ local function triggerPromptDirectly(prompt)
 		for _, conn in ipairs(connections) do
 			-- En clientes normalmente se pasa el jugador local
 			conn:Fire(player)
+			print("Conection")
 		end
 	end
 end
