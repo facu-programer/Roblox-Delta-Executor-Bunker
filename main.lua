@@ -222,6 +222,9 @@ local function collectTools()
 			if proxy then
 				char:SetPrimaryPartCFrame(pos)
 				proxy:InputHoldBegin()
+				if RealFlag then
+					task.wait(proxy.HoldDuration)
+				end
 				proxy:InputHoldEnd()
 				e.Handle.CFrame = root.CFrame
 				e.Parent = player.Backpack
@@ -286,12 +289,13 @@ RunService.Heartbeat:Connect(function()
 	end
 end)
 
-local CoreGui = game:GetService("CoreGui")
+local CoreGui = player.PlayerGui
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "BackpackButtonGui"
 screenGui.ResetOnSpawn = false
 screenGui.Enabled = true
+screenGui.DisplayOrder = 10
 screenGui.Parent = CoreGui
 
 local otherGui = Instance.new("ScreenGui")
@@ -300,6 +304,7 @@ otherGui.Name = "BackpackOtherGui"
 otherGui.ResetOnSpawn = false
 otherGui.Enabled = true
 otherGui.IgnoreGuiInset = true
+otherGui.DisplayOrder = -10
 otherGui.Parent = CoreGui
 
 local button = Instance.new("TextButton")
