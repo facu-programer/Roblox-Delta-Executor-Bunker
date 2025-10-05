@@ -4,15 +4,31 @@ local HttpService = game:GetService("HttpService")
 local RealFlag = true
 
 local function triggerPromptDirectly(prompt)
-	local prompt = prompt :: ProximityPrompt
-	if prompt and prompt:IsA("ProximityPrompt") then
-		prompt.Triggered:Fire(player)
-	end
-	task.spawn(function()
-		prompt:InputHoldBegin()
-		task.wait(prompt.HoldDuration or 0)
-		prompt:InputHoldEnd()
-	end)
+    if not (prompt and prompt:IsA("ProximityPrompt")) then return end
+
+    local success = false
+
+    while not success do
+        -- Intento de disparar el prompt
+        pcall(function()
+            -- Si hay conexiones locales
+            local connections = getconnections(prompt.Triggered)
+            for _, conn in ipairs(connections) do
+                conn:Fire(player)
+            end
+        end)
+
+        -- Intento con InputHold (simula interacción del jugador)
+        prompt:InputHoldBegin()
+        task.wait(prompt.HoldDuration or 0)
+        prompt:InputHoldEnd()
+
+        -- Comprueba si se disparó
+        success = prompt.LastActivation == player -- ejemplo: usar propiedad que indique activación
+        task.wait(0.1) -- pequeña espera para no bloquear
+    end
+
+    print("Prompt activado con éxito por " .. player.Name)
 end
 
 local function getHumanoid()
