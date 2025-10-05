@@ -211,6 +211,7 @@ local function collectTools()
 					task.wait(proxy.HoldDuration)
 					proxy:InputHoldEnd()
 					char:SetPrimaryPartCFrame(pos)
+					e.Parent = player.Backpack
 				end)
 			end
 		end
