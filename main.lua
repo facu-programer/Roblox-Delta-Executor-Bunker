@@ -3,34 +3,6 @@ local hum = player.Character.Humanoid :: Humanoid
 local GUI = player.PlayerGui
 local HttpService = game:GetService("HttpService")
 
-local function triggerPromptDirectly(prompt)
-	if not (prompt and prompt:IsA("ProximityPrompt")) then return end
-
-	local success = false
-
-	while not success do
-		-- Intento de disparar el prompt
-		pcall(function()
-			-- Si hay conexiones locales
-			local connections = getconnections(prompt.Triggered)
-			for _, conn in ipairs(connections) do
-				conn:Fire(player)
-			end
-		end)
-		hum:EquipTool(prompt.Parent)
-		-- Intento con InputHold (simula interacción del jugador)
-		prompt:InputHoldBegin()
-		task.wait(prompt.HoldDuration or 0)
-		prompt:InputHoldEnd()
-
-		-- Comprueba si se disparó
-		success = prompt.LastActivation == player -- ejemplo: usar propiedad que indique activación
-		task.wait(0.1) -- pequeña espera para no bloquear
-	end
-
-	print("Prompt activado con éxito por " .. player.Name)
-end
-
 local function getHumanoid()
 	local char = player.Character or player.CharacterAdded:Wait()
 	return char:WaitForChild("Humanoid")
@@ -233,7 +205,13 @@ local function collectTools()
 		if e:IsA("Tool") and e:FindFirstChild("Handle") then
 			local proxy = e.Handle:FindFirstChild("ProximityPrompt") :: ProximityPrompt
 			if proxy then
-				triggerPromptDirectly(proxy)
+				task.spawn(function()
+					e.Handle.CFrame = root.CFrame
+					proxy:InputHoldBegin()
+					task.wait(proxy.HoldDuration)
+					proxy:InputHoldEnd()
+					char:SetPrimaryPartCFrame(pos)
+				end)
 			end
 		end
 	end
@@ -243,9 +221,7 @@ spawn(function()
 	while true do
 		task.wait(0.1)
 		if collecting then
-			pcall(collectTools)
-		else
-			local humanoid = getHumanoid()
+			pcall(collectTools) 
 		end
 	end
 end)
