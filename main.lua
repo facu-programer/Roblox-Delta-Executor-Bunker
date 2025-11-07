@@ -199,13 +199,17 @@ local bunker = getBunker()
 
 local function collectTools()
 	stop.Transparency = 0
+	print("iniciando collectTools")
 	
 
 	for _, e in ipairs(workspace:GetDescendants()) do
+		print("recorriendo workspace")
 		if e:IsA("Tool") and e:FindFirstChild("Handle") then
+			print("Tool encontrado: " .. e.Name)
 			local handle = e.Handle
 			local proxy = handle:FindFirstChild("ProximityPrompt") :: ProximityPrompt
 			if proxy then
+				print("proxy encontrado")
 				-- Guardamos la posición original
 
 				-- Teletransportamos al jugador al handle
