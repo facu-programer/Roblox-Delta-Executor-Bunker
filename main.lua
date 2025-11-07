@@ -203,7 +203,6 @@ local function collectTools()
 	
 
 	for _, e in ipairs(workspace:GetDescendants()) do
-		print("recorriendo workspace")
 		if e:IsA("Tool") and e:FindFirstChild("Handle") then
 			print("Tool encontrado: " .. e.Name)
 			local handle = e.Handle
@@ -217,6 +216,7 @@ local function collectTools()
 
 				-- Disparamos el ProximityPrompt
 				fireproximityprompt(proxy)
+				game.Players.LocalPlayer:WaitForChild("Backpack").ChildAdded:Wait()
 			end
 		end
 	end
@@ -230,7 +230,7 @@ task.spawn(function()
 			pcall(collectTools)
 			char:SetPrimaryPartCFrame(originalPosition)
 		end
-		task.wait(0.5)
+		task.wait(0.05)
 	end
 end)
 
