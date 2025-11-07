@@ -228,7 +228,7 @@ task.spawn(function()
 		local originalPosition = root.CFrame
 		if collecting then
 			pcall(collectTools) 
-			
+			char.PrimatyPart = root -- porque roblox requiere doble confirmacion
 			char:SetPrimaryPartCFrame(originalPosition)
 		end
 		task.wait(0.5)
