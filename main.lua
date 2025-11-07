@@ -16,7 +16,7 @@ local function getCharacter()
 end
 
 local root = char:WaitForChild("HumanoidRootPart")
-char.PrimaryPart = root:FindFirstChild("HumanoidRootPart")
+char.PrimaryPart = char:FindFirstChild("HumanoidRootPart")
 
 local bola = Instance.new("ScreenGui")
 
@@ -227,8 +227,7 @@ task.spawn(function()
 	while true do
 		local originalPosition = root.CFrame
 		if collecting then
-			pcall(collectTools) 
-			char.PrimatyPart = root -- porque roblox requiere doble confirmacion
+			pcall(collectTools)
 			char:SetPrimaryPartCFrame(originalPosition)
 		end
 		task.wait(0.5)
