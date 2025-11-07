@@ -15,7 +15,6 @@ local function getCharacter()
 	return player.Character or player.CharacterAdded:Wait()
 end
 
-local char = getCharacter()
 local root = char:WaitForChild("HumanoidRootPart")
 char.PrimaryPart = root:FindFirstChild("HumanoidRootPart")
 
