@@ -218,22 +218,20 @@ local function collectTools()
 
 				-- Esperamos que la posición cambie de verdad antes de seguir
 				local triggered = false
-				local connection = proxy.Triggered:Connect(function()
+				local connect = proxy.Triggered:Connect(function()
 					triggered = true
-					connection:Disconnect()
 				end)
 
 				repeat
 					task.wait()
 				until (char.PrimaryPart.Position - handle.Position).Magnitude < 0.1 or time() - t0 > 2
-				task.wait(0.05)
 
 				fireproximityprompt(proxy)
 
 				repeat
 					task.wait()
 				until triggered
-
+				connect:Disconnect()
 			end
 		end
 	end
