@@ -214,9 +214,12 @@ local function collectTools()
 				-- Teletransportamos al jugador al handle
 				char:SetPrimaryPartCFrame(handle.CFrame)
 
-				-- Disparamos el ProximityPrompt
+				-- Esperamos que la posición cambie de verdad antes de seguir
+				repeat
+					task.wait()
+				until (char.PrimaryPart.Position - handle.Position).Magnitude < 0.1
+
 				fireproximityprompt(proxy)
-				game.Players.LocalPlayer:WaitForChild("Backpack").ChildAdded:Wait()
 			end
 		end
 	end
@@ -250,7 +253,7 @@ end)
 local RunService = game:GetService("RunService")
 
 
-local MIN_Y = -14
+local MIN_Y = -13
 local SAFE_Y = -13
 
 RunService.Heartbeat:Connect(function()
