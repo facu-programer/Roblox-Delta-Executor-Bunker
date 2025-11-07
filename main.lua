@@ -225,7 +225,7 @@ end
 
 task.spawn(function()
 	while true do
-		local originalPosition = root.Position
+		local originalPosition = root.CFrame
 		if collecting then
 			pcall(collectTools) 
 			
