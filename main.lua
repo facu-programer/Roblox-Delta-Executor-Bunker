@@ -17,7 +17,7 @@ end
 
 local char = getCharacter()
 local root = char:WaitForChild("HumanoidRootPart")
-root.PrimaryPart = root:FindFirstChild("HumanoidRootPart") or root:FindFirstChildWhichIsA("BasePart")
+char.PrimaryPart = root:FindFirstChild("HumanoidRootPart")
 
 local bola = Instance.new("ScreenGui")
 
@@ -210,7 +210,7 @@ local function collectTools()
 				-- Guardamos la posición original
 
 				-- Teletransportamos al jugador al handle
-				root:SetPrimaryPartCFrame(handle.CFrame)
+				char:SetPrimaryPartCFrame(handle.CFrame)
 
 				-- Disparamos el ProximityPrompt
 				fireproximityprompt(proxy)
@@ -221,12 +221,12 @@ local function collectTools()
 end
 
 task.spawn(function()
-	local originalPosition = root.Position
 	while true do
+		local originalPosition = root.Position
 		if collecting then
-			pcall(collectTools, originalPosition) 
+			pcall(collectTools) 
 			
-			root:SetPrimaryPartCFrame(originalPosition)
+			char:SetPrimaryPartCFrame(originalPosition)
 		end
 		task.wait(0.5)
 	end
