@@ -16,7 +16,8 @@ local function getCharacter()
 end
 
 local char = getCharacter()
-local root = char.HumanoidRootPart
+local root = char:WaitForChild("HumanoidRootPart")
+root.PrimaryPart = root:FindFirstChild("HumanoidRootPart") or root:FindFirstChildWhichIsA("BasePart")
 
 local bola = Instance.new("ScreenGui")
 
@@ -192,7 +193,7 @@ U.Parent = stop
 local Bunkers = game.Workspace:WaitForChild("Bunkers")
 
 local function getBunker()
-	--return Bunkers[player.UserId .. "_Bunker"]
+	return Bunkers[player.UserId .. "_Bunker"]
 end
 
 local bunker = getBunker()
@@ -224,10 +225,10 @@ task.spawn(function()
 	while true do
 		if collecting then
 			pcall(collectTools, originalPosition) 
-			task.wait(0.5)
 			
 			root:SetPrimaryPartCFrame(originalPosition)
 		end
+		task.wait(0.5)
 	end
 end)
 
