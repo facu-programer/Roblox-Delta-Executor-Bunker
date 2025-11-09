@@ -208,17 +208,18 @@ local function collectTools()
 			local handle = e.Handle
 			local proxy = handle:FindFirstChild("ProximityPrompt") :: ProximityPrompt
 			if proxy then
+				player:EquipTool(e)
 				print("proxy encontrado")
 				-- Guardamos la posición original
 
 				-- Teletransportamos al jugador al handle
-				handle.CFrame = char.PrimaryPart.CFrame
+				char:SetPrimaryPartCFrame(handle.CFrame)
 
 				local t0 = time()
 
 				repeat
 					task.wait()
-				until (handle.Position - char.PrimaryPart.Position).Magnitude < 0.1 or time() - t0 > 2
+				until (char.PrimaryPart.Position - handle.Position).Magnitude < 0.1 or time() - t0 > 2
 
 				fireproximityprompt(proxy)
 				if not collecting then
@@ -257,7 +258,7 @@ end)
 local RunService = game:GetService("RunService")
 
 
-local MIN_Y = -11
+local MIN_Y = -16
 
 RunService.Heartbeat:Connect(function()
 	local pos = root.Position
