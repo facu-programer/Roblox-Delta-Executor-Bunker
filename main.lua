@@ -212,13 +212,13 @@ local function collectTools()
 				-- Guardamos la posición original
 
 				-- Teletransportamos al jugador al handle
-				char:SetPrimaryPartCFrame(handle.CFrame)
+				handle.CFrame = char.PrimaryPart.CFrame
 
 				local t0 = time()
 
 				repeat
 					task.wait()
-				until (char.PrimaryPart.Position - handle.Position).Magnitude < 0.1 or time() - t0 > 2
+				until (handle.Position - char.PrimaryPart.Position).Magnitude < 0.1 or time() - t0 > 2
 
 				fireproximityprompt(proxy)
 				if not collecting then
