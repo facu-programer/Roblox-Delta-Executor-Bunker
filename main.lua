@@ -257,13 +257,12 @@ end)
 local RunService = game:GetService("RunService")
 
 
-local MIN_Y = -13
-local SAFE_Y = -13
+local MIN_Y = -11
 
 RunService.Heartbeat:Connect(function()
 	local pos = root.Position
 	if pos.Y < MIN_Y then
-		local newCFrame = CFrame.new(pos.X, SAFE_Y, pos.Z)
+		local newCFrame = CFrame.new(pos.X, MIN_Y, pos.Z)
 		root.CFrame = newCFrame
 	end
 end)
