@@ -274,7 +274,7 @@ local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "BackpackButtonGui"
 screenGui.ResetOnSpawn = false
 screenGui.Enabled = true
-screenGui.DisplayOrder = 10
+screenGui.DisplayOrder = -10
 screenGui.Parent = CoreGui
 
 local otherGui = Instance.new("ScreenGui")
