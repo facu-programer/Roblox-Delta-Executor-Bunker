@@ -208,8 +208,9 @@ local function collectTools()
 			local handle = e.Handle
 			local proxy = handle:FindFirstChild("ProximityPrompt") :: ProximityPrompt
 			if proxy then
-				player:EquipTool(e)
 				print("proxy encontrado")
+				e.Parent = player.Backpack
+				player:EquipTool(e)
 				-- Guardamos la posición original
 
 				-- Teletransportamos al jugador al handle
