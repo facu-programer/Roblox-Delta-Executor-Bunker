@@ -1,1 +1,2 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/facu-programer/Roblox-Delta-Executor-Bunker/main/main.lua?t="..tick()))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/facu-programer/Roblox-Delta-Executor-Bunker/main/Gui.lua?t="..tick()))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/facu-programer/Roblox-Delta-Executor-Bunker/main/GuiLogic.lua?t="..tick()))()
